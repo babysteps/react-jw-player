@@ -26,7 +26,8 @@ class ReactJWPlayer extends Component {
   componentDidMount() {
     const isJWPlayerScriptLoaded = !!window.jwplayer;
     if (isJWPlayerScriptLoaded) {
-      this._initialize();
+      console.log('hasPlayed', this.state.hasPlayed);
+    	this._initialize();
       return;
     }
 
@@ -43,12 +44,27 @@ class ReactJWPlayer extends Component {
       existingScript.onload = getCurriedOnLoad(existingScript, this._initialize);
     }
   }
+
+	componentWillReceiveProps() {
+  	console.log('update');
+	}
   _initialize() {
     const component = this;
     const player = window.jwplayer(this.props.playerId);
     const playerOpts = getPlayerOpts(this.props);
+	  console.log('load', this.props.playlist, this.state.hasPlayed);
+	  if (this.state.hasPlayed) {
 
-    initialize({ component, player, playerOpts });
+	  	if (this.props.playlist) {
+
+			  player.load(this.props.playlist);
+		  } else if (this.props.file) {
+			  player.load([{ file: this.props.file }]);
+		  }
+	  } else {
+		  initialize({ component, player, playerOpts });
+	  }
+
   }
   render() {
     return (
